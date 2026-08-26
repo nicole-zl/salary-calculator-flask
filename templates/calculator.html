@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">
+      <div class="brand-logo">薪</div>
+      <div class="brand-text">
+        <h1>千薪万苦 · 计算器</h1>
+        <p>每一秒都在为生活加值 · 实时计算</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <span class="user-badge">👤 {{ username }}</span>
+      <button class="btn-icon" id="btnReset" title="重置数据">↺</button>
+      <button class="btn-icon" id="btnTheme" title="切换主题">🌙</button>
+      <a class="btn-icon" href="{{ url_for('logout') }}" title="退出登录">⏻</a>
+    </div>
+  </div>
+
+  <!-- Countdown (single row) -->
+  <div class="card countdown-card fade-in" id="countdownCard" style="margin-bottom: 22px;">
+    <div class="countdown-label">⏳ 距离今天下班还有</div>
+    <div id="countdownBody">
+      <div class="countdown-display">
+        <div class="cd-unit">
+          <div class="cd-num" id="cdH">00</div>
+          <div class="cd-tag">HOURS</div>
+        </div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit">
+          <div class="cd-num" id="cdM">00</div>
+          <div class="cd-tag">MINUTES</div>
+        </div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit">
+          <div class="cd-num" id="cdS">00</div>
+          <div class="cd-tag">SECONDS</div>
+        </div>
+      </div>
+      <div class="progress-ring"><div id="dayProgress" style="width:0%"></div></div>
+      <div class="countdown-sub" id="countdownSub">今日工作进度 0%</div>
+    </div>
+    <div id="holidayBody" style="display:none;">
+      <div class="holiday-banner" id="holidayText">🌴 今天休假，快乐无边！</div>
+    </div>
+  </div>
+
+  <!-- Hero: earned today + items display (two cards in one row) -->
+  <div class="hero">
+    <!-- Money stats -->
+    <div class="card money-card fade-in">
+      <div class="money-hero">
+        <div class="money-hero-label">
+          <span class="money-hero-icon">💰</span>
+          <span>今日已赚</span>
+        </div>
+        <div class="money-hero-value">
+          <span class="currency">¥</span><span class="value" id="earnedToday">0.00</span>
+        </div>
+        <div class="money-hero-sub" id="earnedSub">努力搬砖中…</div>
+      </div>
+
+      <div class="money-grid">
+        <div class="money-cell money-cell--accent">
+          <div class="cell-label">📌 再坚持赚：即可下班</div>
+          <div class="cell-value"><span id="remainToEarn">0.00</span><span class="cell-unit">元</span></div>
+        </div>
+        <div class="money-cell money-cell--info">
+          <div class="cell-label">📊 今日收入</div>
+          <div class="cell-value"><span id="totalToday">0.00</span><span class="cell-unit">元</span></div>
+        </div>
+        <div class="money-cell">
+          <div class="cell-label">⚡ 每分钟赚</div>
+          <div class="cell-value"><span id="perMinute">0.00</span><span class="cell-unit">元/分</span></div>
+        </div>
+        <div class="money-cell">
+          <div class="cell-label">⚡ 每秒赚</div>
+          <div class="cell-value"><span id="perSecond">0.00</span><span class="cell-unit">元/秒</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Items display -->
+    <div class="card items-display-card fade-in">
+      <div class="card-title" style="margin-bottom: 14px;">☕ 实物换算</div>
+      <div class="items-list" id="itemsList"></div>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="card tips-card fade-in">
+    <div class="tips-icon">💡</div>
+    <div class="tips-content">
+      <div class="label">今日 TIPS</div>
+      <div class="text" id="tipsText" contenteditable="true">下班不是奖励，是边界。</div>
+    </div>
+    <div class="tips-hint">点击文字可编辑 · 自动保存</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="card stat fade-in">
+      <div class="stat-label">📅 距下次发薪</div>
+      <div class="stat-value accent" id="daysToPayday">--</div>
+      <div class="stat-meta" id="paydayMeta">--</div>
+    </div>
+    <div class="card stat fade-in">
+      <div class="stat-label">💼 本月工作日</div>
+      <div class="stat-value" id="monthWorkDays">--</div>
+      <div class="stat-meta" id="monthWorkMeta">--</div>
+    </div>
+    <div class="card stat fade-in">
+      <div class="stat-label">📈 本月已赚</div>
+      <div class="stat-value success" id="monthEarned">0.00</div>
+      <div class="stat-meta" id="monthEarnedMeta">含今日预估</div>
+      <div class="bar"><div id="monthBar" style="width:0%"></div></div>
+    </div>
+    <div class="card stat fade-in">
+      <div class="stat-label">🎯 本月待赚</div>
+      <div class="stat-value warning" id="monthRemain">0.00</div>
+      <div class="stat-meta" id="monthRemainMeta">--</div>
+    </div>
+    <div class="card stat fade-in">
+      <div class="stat-label">⏱️ 每日工作时长</div>
+      <div class="stat-value" id="dailyHours">--</div>
+      <div class="stat-meta" id="dailyHoursMeta">扣除午休</div>
+    </div>
+    <div class="card stat fade-in">
+      <div class="stat-label">🔥 时薪（实付分钟）</div>
+      <div class="stat-value accent" id="hourlyRate">0.00</div>
+      <div class="stat-meta">元/小时</div>
+    </div>
+  </div>
+
+  <!-- Settings (Collapsible) - 放在页面最下方 -->
+  <details class="collapsible fade-in" id="settingsPanel" style="margin-top: 22px;">
+    <summary>
+      <div class="summary-left">
+        <span class="icon">⚙️</span>
+        <span>工资配置</span>
+        <span class="summary-preview" id="settingsPreview">月薪 ¥0 · 每月 0 天</span>
+      </div>
+      <div class="summary-right">
+        <span>自动保存</span>
+        <span class="chevron">▾</span>
+      </div>
+    </summary>
+    <div class="collapsible-body">
+      <div class="settings">
+        <div class="field">
+          <label>税前月薪（元）</label>
+          <input type="number" id="salary" min="0" step="100" placeholder="如 15000" />
+        </div>
+        <div class="field">
+          <label>每月工作日（天）</label>
+          <input type="number" id="workDaysPerMonth" min="1" max="31" placeholder="如 22" />
+          <span class="hint">可留空，自动按工作日历计算</span>
+        </div>
+        <div class="field">
+          <label>上班时间</label>
+          <input type="time" id="workStart" value="09:00" />
+        </div>
+        <div class="field">
+          <label>下班时间</label>
+          <input type="time" id="workEnd" value="18:00" />
+        </div>
+        <div class="field">
+          <label>午休开始</label>
+          <input type="time" id="lunchStart" value="12:00" />
+        </div>
+        <div class="field">
+          <label>午休结束</label>
+          <input type="time" id="lunchEnd" value="13:00" />
+        </div>
+        <div class="field">
+          <label>每月发薪日</label>
+          <input type="number" id="payDay" min="1" max="31" placeholder="如 10" value="10" />
+          <span class="hint">用于发薪日倒计时</span>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Items Config (Collapsible) - 放在页面最下方 -->
+  <details class="collapsible fade-in" id="itemsPanel" style="margin-top: 22px;">
+    <summary>
+      <div class="summary-left">
+        <span class="icon">☕</span>
+        <span>实物换算配置</span>
+        <span class="summary-preview" id="itemsPreview">已添加 0 项</span>
+      </div>
+      <div class="summary-right">
+        <span>选择一项展示在上方</span>
+        <span class="chevron">▾</span>
+      </div>
+    </summary>
+    <div class="collapsible-body">
+      <div class="items-config-list" id="itemsConfigList"></div>
+      <div class="item-form">
+        <input type="text" id="itemName" placeholder="实物名称（如 咖啡）" />
+        <input type="number" id="itemPrice" placeholder="单价" min="0" step="0.01" />
+        <input type="text" id="itemUnit" placeholder="单位（如 杯）" />
+        <button class="btn" id="btnAddItem">＋ 添加</button>
+      </div>
+    </div>
+  </details>
+
+  <div class="footer">
+    数据存储于服务器 SQLite · 多设备同步 · © 千薪万苦 Calculator
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="{{ url_for('static', filename='js/calculator.js') }}"></script>
+{% endblock %}
