@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+
+# 本地 SQLite 数据库（不要推到 GitHub，生产用 Turso）
+salary_calculator.db
+salary_calculator.db-journal
+salary_calculator.db-wal
+salary_calculator.db-shm
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Trae
+.trae/
+
+# Vercel
+.vercel/

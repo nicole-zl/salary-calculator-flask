@@ -10,8 +10,11 @@ import db
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# 启动时确保数据库已初始化
-init_db()
+# 启动时确保数据库已初始化（Vercel 每次冷启动也会执行，CREATE TABLE IF NOT EXISTS 是幂等的）
+try:
+    init_db()
+except Exception as e:
+    print(f'init_db warning: {e}')
 
 
 # ============== 吞掉 Trae IDE Vite 客户端轮询（避免日志噪音） ==============
@@ -204,6 +207,6 @@ def api_reset():
 
 
 if __name__ == '__main__':
-    # 开发模式启动
+    # 本地开发模式启动（Vercel 上不会执行此分支，由 api/index.py 暴露 app）
     # 端口 5000 被 macOS AirPlay Receiver 占用，改用 5001
     app.run(host='127.0.0.1', port=5001, debug=True)
