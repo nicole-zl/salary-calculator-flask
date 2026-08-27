@@ -1,0 +1,46 @@
+init_db.py
+  s_a330d0892584a1::t_f1db12f44a41ce 68-78
+app.py
+  s_a330d0892584a1::t_98a7f02d14d96d 209-255
+static/js/calculator.js
+  s_a330d0892584a1::t_e7172fc21d6000 37-53
+  s_a330d0892584a1::t_4621125e72b363 203-212
+  s_a330d0892584a1::t_1ca7eddab6c0d2 686-840
+schema.sql
+  s_a330d0892584a1::t_18f6f3b8a609c8 42-57
+templates/calculator.html
+  s_a330d0892584a1::t_83cc5b10323594 102-136
+static/css/style.css
+  s_a330d0892584a1::t_8954ce640467c3 948-1164
+db.py
+  s_a330d0892584a1::t_3e3557034020e4 271-312
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "68f6eb8ee78c3ef9066d33f98cde7d75fd3009f8",
+  "prompts": {},
+  "sessions": {
+    "s_a330d0892584a1": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a8bf45cabd1ce02e835b19c",
+        "model": "glm-5.2"
+      },
+      "human_author": "li5.zhong <li5.zhong@tcl.com>",
+      "custom_attributes": {
+        "dedupe_key": "6a8bf45cabd1ce02e835b19c:6a8faddbabd1ce02e835bbbf:afterEdit:d639741b",
+        "tool_id": "icube:applyChatSnapshotPatch",
+        "edit_kind": "file_edit",
+        "tool_type": "builtin",
+        "external_session_id": "6a8bf45cabd1ce02e835b19c",
+        "operation_id": "6a8faddbabd1ce02e835bbbf",
+        "source_scene": "agent",
+        "session_id": "6a8bf45cabd1ce02e835b19c",
+        "tool_use_id": "6a8faddbabd1ce02e835bbbf",
+        "client_type": "ide",
+        "runtime_client": "trae-tob-git-ai"
+      }
+    }
+  }
+}
