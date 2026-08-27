@@ -1,0 +1,51 @@
+init_db.py
+  s_a330d0892584a1::t_d49f280be1bba6 1,3,6,8-29,34-35,40-41,57-58,67-77
+README.md
+  s_a330d0892584a1::t_2f0240d80a3004 1,3,5,11,13-14,17,20,23,27-118,126-127,130,133,135,141,147-148,151-153,157-160,163-198,209-210,217-218,220,222-224,226-227,238-268,271-276,278,280,282-287
+.gitignore
+  s_a330d0892584a1::t_2691487571f64b 1-29
+config.py
+  s_a330d0892584a1::t_2f4dc04781d34d 1,6,8-12,14-19,21-23
+schema.sql
+  s_a330d0892584a1::t_ba506f58c275f0 1-41
+api/index.py
+  s_a330d0892584a1::t_e741000a2c6872 1-11
+requirements.txt
+  s_a330d0892584a1::t_2d6c9d579e635a 3
+db.py
+  s_a330d0892584a1::t_b748d427690dc6 1,3-44,48,50-54,58,60-64,70-106,108-124,126-127,129-130,133-134,138-140,142-146,159-165,169,171-180,186-220,222-270
+vercel.json
+  s_a330d0892584a1::t_b20e2b52ecea35 1-11
+app.py
+  s_a330d0892584a1::t_7a6bec9bcff6bf 13-17
+  s_a330d0892584a1::t_9e657d6d1b944a 210
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "d57c36e17655a1a01542ca20c699ddb50c305e9b",
+  "prompts": {},
+  "sessions": {
+    "s_a330d0892584a1": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a8bf45cabd1ce02e835b19c",
+        "model": "glm-5.2"
+      },
+      "human_author": "li5.zhong <li5.zhong@tcl.com>",
+      "custom_attributes": {
+        "external_session_id": "6a8bf45cabd1ce02e835b19c",
+        "edit_kind": "file_edit",
+        "tool_type": "builtin",
+        "session_id": "6a8bf45cabd1ce02e835b19c",
+        "tool_use_id": "6a8eb1feabd1ce02e835baee",
+        "tool_id": "icube:applyChatSnapshotPatch",
+        "operation_id": "6a8eb1feabd1ce02e835baee",
+        "source_scene": "agent",
+        "runtime_client": "trae-tob-git-ai",
+        "client_type": "ide",
+        "dedupe_key": "6a8bf45cabd1ce02e835b19c:6a8eb1feabd1ce02e835baee:afterEdit:1efd95de"
+      }
+    }
+  }
+}
