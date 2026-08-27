@@ -1,0 +1,32 @@
+vercel.json
+  s_a330d0892584a1::t_6b083473a6fcbb 10-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "394fb356eeb5fe59706164a22261063b3a7de75c",
+  "prompts": {},
+  "sessions": {
+    "s_a330d0892584a1": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a8bf45cabd1ce02e835b19c",
+        "model": "glm-5.2"
+      },
+      "human_author": "li5.zhong <li5.zhong@tcl.com>",
+      "custom_attributes": {
+        "client_type": "ide",
+        "tool_use_id": "6a8fa7cbabd1ce02e835bb4f",
+        "session_id": "6a8bf45cabd1ce02e835b19c",
+        "edit_kind": "file_edit",
+        "tool_id": "icube:applyChatSnapshotPatch",
+        "external_session_id": "6a8bf45cabd1ce02e835b19c",
+        "dedupe_key": "6a8bf45cabd1ce02e835b19c:6a8fa7cbabd1ce02e835bb4f:afterEdit:c995a088",
+        "runtime_client": "trae-tob-git-ai",
+        "source_scene": "agent",
+        "tool_type": "builtin",
+        "operation_id": "6a8fa7cbabd1ce02e835bb4f"
+      }
+    }
+  }
+}
