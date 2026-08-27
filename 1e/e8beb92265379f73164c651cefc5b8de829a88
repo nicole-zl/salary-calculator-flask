@@ -1,0 +1,32 @@
+requirements.txt
+  s_a330d0892584a1::t_fa0152c7402cb5 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "1ee8beb92265379f73164c651cefc5b8de829a88",
+  "prompts": {},
+  "sessions": {
+    "s_a330d0892584a1": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a8bf45cabd1ce02e835b19c",
+        "model": "glm-5.2"
+      },
+      "human_author": "li5.zhong <li5.zhong@tcl.com>",
+      "custom_attributes": {
+        "tool_use_id": "6a8fa637abd1ce02e835bb3e",
+        "tool_id": "icube:applyChatSnapshotPatch",
+        "tool_type": "builtin",
+        "edit_kind": "file_edit",
+        "dedupe_key": "6a8bf45cabd1ce02e835b19c:6a8fa637abd1ce02e835bb3e:afterEdit:af7a9fc1",
+        "operation_id": "6a8fa637abd1ce02e835bb3e",
+        "source_scene": "agent",
+        "external_session_id": "6a8bf45cabd1ce02e835b19c",
+        "runtime_client": "trae-tob-git-ai",
+        "session_id": "6a8bf45cabd1ce02e835b19c",
+        "client_type": "ide"
+      }
+    }
+  }
+}
