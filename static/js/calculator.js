@@ -34,6 +34,23 @@ const API = {
   async reset() {
     const r = await fetch('/api/reset', { method: 'POST' });
     return r.json();
+  },
+  async getBreaks() {
+    const r = await fetch('/api/breaks');
+    if (r.status === 401) { location.href = '/login'; return null; }
+    return r.json();
+  },
+  async addBreak(data) {
+    const r = await fetch('/api/breaks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return r.json();
+  },
+  async deleteBreak(id) {
+    const r = await fetch(`/api/breaks/${id}`, { method: 'DELETE' });
+    return r.json();
   }
 };
 
@@ -183,7 +200,16 @@ const els = {
   btnTheme: $('btnTheme'), btnReset: $('btnReset'), toast: $('toast'),
   settingsPanel: $('settingsPanel'), settingsPreview: $('settingsPreview'),
   itemsPanel: $('itemsPanel'), itemsPreview: $('itemsPreview'),
-  itemsConfigList: $('itemsConfigList')
+  itemsConfigList: $('itemsConfigList'),
+  // 带薪离席
+  breakTip: $('breakTip'), breakTimerWrap: $('breakTimerWrap'),
+  breakTimer: $('breakTimer'), breakEarning: $('breakEarning'),
+  btnBreakStart: $('btnBreakStart'), btnBreakEnd: $('btnBreakEnd'),
+  btnBreakHistory: $('btnBreakHistory'),
+  breakHistoryModal: $('breakHistoryModal'),
+  btnCloseHistory: $('btnCloseHistory'),
+  breakHistoryList: $('breakHistoryList'),
+  breakHistorySummary: $('breakHistorySummary')
 };
 
 // ============== 持久化（防抖保存到后端） ==============
@@ -656,6 +682,161 @@ function bindEvents() {
   els.itemsPanel.addEventListener('toggle', () => {
     config.itemsOpen = els.itemsPanel.open;
     persistConfig();
+  });
+
+  // ============== 带薪离席事件 ==============
+  els.btnBreakStart.addEventListener('click', startBreak);
+  els.btnBreakEnd.addEventListener('click', endBreak);
+  els.btnBreakHistory.addEventListener('click', openBreakHistory);
+  els.btnCloseHistory.addEventListener('click', closeBreakHistory);
+  els.breakHistoryModal.addEventListener('click', (e) => {
+    if (e.target === els.breakHistoryModal) closeBreakHistory();
+  });
+}
+
+// ============== 带薪离席逻辑 ==============
+let breakState = {
+  active: false,
+  startAt: null,
+  perSecond: 0,
+  timerId: null
+};
+
+function getCurrentPerSecond() {
+  const now = new Date();
+  if (!isWorkday(now).work) return 0;
+  const totalWorkMin = calcTotalWorkMinutes(config.workStart, config.workEnd, config.lunchStart, config.lunchEnd);
+  const salary = Number(config.salary) || 0;
+  const workDays = Number(config.workDaysPerMonth) || countWorkdaysInMonth(now.getFullYear(), now.getMonth());
+  const perMinuteVal = workDays > 0 && totalWorkMin > 0 ? salary / workDays / totalWorkMin : 0;
+  return perMinuteVal / 60;
+}
+
+function startBreak() {
+  if (breakState.active) return;
+  breakState.active = true;
+  breakState.startAt = new Date();
+  breakState.perSecond = getCurrentPerSecond();
+  els.breakTip.style.display = 'none';
+  els.breakTimerWrap.style.display = 'block';
+  els.btnBreakStart.style.display = 'none';
+  els.btnBreakEnd.style.display = 'block';
+  updateBreakDisplay();
+  breakState.timerId = setInterval(updateBreakDisplay, 100);
+  showToast('开始带薪离席 ☕');
+}
+
+function updateBreakDisplay() {
+  if (!breakState.active) return;
+  const now = new Date();
+  const diff = Math.floor((now - breakState.startAt) / 1000);
+  const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+  const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+  const s = String(diff % 60).padStart(2, '0');
+  els.breakTimer.textContent = `${h}:${m}:${s}`;
+  const earned = diff * breakState.perSecond;
+  els.breakEarning.textContent = earned.toFixed(2);
+}
+
+async function endBreak() {
+  if (!breakState.active) return;
+  const endAt = new Date();
+  const durationSec = Math.floor((endAt - breakState.startAt) / 1000);
+  const earnings = durationSec * breakState.perSecond;
+  clearInterval(breakState.timerId);
+  breakState.active = false;
+
+  const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+
+  const res = await API.addBreak({
+    startAt: fmt(breakState.startAt),
+    endAt: fmt(endAt),
+    durationSeconds: durationSec,
+    earnings: earnings,
+    note: ''
+  });
+
+  // 重置 UI
+  els.breakTip.style.display = 'block';
+  els.breakTimerWrap.style.display = 'none';
+  els.btnBreakStart.style.display = 'block';
+  els.btnBreakEnd.style.display = 'none';
+  els.breakTimer.textContent = '00:00:00';
+  els.breakEarning.textContent = '0.00';
+
+  if (res && res.ok) {
+    showToast(`结算完成 · ¥${earnings.toFixed(2)} 已入账 🎉`);
+  } else {
+    showToast('保存失败，请重试');
+  }
+}
+
+async function openBreakHistory() {
+  els.breakHistoryModal.classList.add('show');
+  await renderBreakHistory();
+}
+
+function closeBreakHistory() {
+  els.breakHistoryModal.classList.remove('show');
+}
+
+async function renderBreakHistory() {
+  const breaks = await API.getBreaks();
+  if (!breaks) return;
+  if (!breaks.length) {
+    els.breakHistorySummary.innerHTML = '';
+    els.breakHistoryList.innerHTML = '<div class="break-history-empty">还没有带薪离席记录<br>点击"开始计时"创造第一条 ☕</div>';
+    return;
+  }
+
+  const totalSec = breaks.reduce((s, b) => s + Number(b.durationSeconds || 0), 0);
+  const totalEarn = breaks.reduce((s, b) => s + Number(b.earnings || 0), 0);
+  const totalMin = Math.floor(totalSec / 60);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+
+  els.breakHistorySummary.innerHTML = `
+    <div class="summary-item">
+      <span>总次数</span>
+      <span class="summary-value">${breaks.length}</span>
+    </div>
+    <div class="summary-item">
+      <span>总时长</span>
+      <span class="summary-value">${h}h ${m}m</span>
+    </div>
+    <div class="summary-item">
+      <span>总收益</span>
+      <span class="summary-value">¥${totalEarn.toFixed(2)}</span>
+    </div>
+  `;
+
+  els.breakHistoryList.innerHTML = breaks.map(b => {
+    const sec = Number(b.durationSeconds || 0);
+    const mm = Math.floor(sec / 60);
+    const ss = sec % 60;
+    const durationStr = mm > 0 ? `${mm}分${ss}秒` : `${ss}秒`;
+    const startStr = b.startAt ? b.startAt.replace('T', ' ').slice(5, 16) : '';
+    return `
+      <div class="break-history-item">
+        <div class="item-info">
+          <div class="item-time">${startStr}</div>
+          <div class="item-meta">时长 ${durationStr}</div>
+        </div>
+        <div class="item-earning">¥${Number(b.earnings || 0).toFixed(2)}</div>
+        <span class="item-del" data-id="${b.id}" title="删除">×</span>
+      </div>
+    `;
+  }).join('');
+
+  els.breakHistoryList.querySelectorAll('.item-del').forEach(el => {
+    el.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const id = Number(el.getAttribute('data-id'));
+      if (!confirm('确定删除这条记录？')) return;
+      await API.deleteBreak(id);
+      await renderBreakHistory();
+      showToast('已删除');
+    });
   });
 }
 

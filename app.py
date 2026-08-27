@@ -206,6 +206,53 @@ def api_reset():
     return jsonify({'ok': True})
 
 
+# ============== 带薪离席 API ==============
+@app.route('/api/breaks')
+@login_required
+def api_get_breaks():
+    """获取当前用户带薪离席历史"""
+    rows = db.get_user_breaks(session['user_id'], limit=50)
+    return jsonify([{
+        'id': r['id'],
+        'startAt': r['start_at'],
+        'endAt': r['end_at'],
+        'durationSeconds': r['duration_seconds'],
+        'earnings': r['earnings'],
+        'note': r['note'],
+        'createdAt': r['created_at'],
+    } for r in rows])
+
+
+@app.route('/api/breaks', methods=['POST'])
+@login_required
+def api_add_break():
+    """新增一条带薪离席记录"""
+    data = request.get_json() or {}
+    start_at = data.get('startAt')
+    end_at = data.get('endAt')
+    duration = data.get('durationSeconds')
+    earnings = data.get('earnings')
+    note = data.get('note', '')
+    if not start_at or not end_at or duration is None or earnings is None:
+        return jsonify({'error': '参数缺失'}), 400
+    try:
+        db.add_paid_break(
+            session['user_id'], start_at, end_at,
+            int(duration), float(earnings), note
+        )
+    except Exception as e:
+        return jsonify({'error': f'保存失败: {e}'}), 500
+    return jsonify({'ok': True})
+
+
+@app.route('/api/breaks/<int:break_id>', methods=['DELETE'])
+@login_required
+def api_delete_break(break_id):
+    """删除一条带薪离席记录"""
+    db.delete_paid_break(session['user_id'], break_id)
+    return jsonify({'ok': True})
+
+
 if __name__ == '__main__':
     # 本地开发模式启动（Vercel 上不会执行此分支，由 api/index.py 暴露 app）
     # 端口 5000 被 macOS AirPlay Receiver 占用，改用 5001

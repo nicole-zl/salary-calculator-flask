@@ -39,3 +39,19 @@ CREATE TABLE IF NOT EXISTS items (
     sort_order INTEGER DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+-- 带薪离席记录表（1:N）
+CREATE TABLE IF NOT EXISTS paid_breaks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    start_at TIMESTAMP NOT NULL,
+    end_at TIMESTAMP NOT NULL,
+    duration_seconds INTEGER NOT NULL,
+    earnings REAL NOT NULL,
+    note TEXT DEFAULT '',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_paid_breaks_user_id ON paid_breaks(user_id);
+CREATE INDEX IF NOT EXISTS idx_paid_breaks_created_at ON paid_breaks(user_id, created_at DESC);

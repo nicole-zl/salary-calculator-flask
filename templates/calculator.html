@@ -99,6 +99,41 @@
     <div class="tips-hint">点击文字可编辑 · 自动保存</div>
   </div>
 
+  <!-- 带薪离席 -->
+  <div class="card break-card fade-in" id="breakCard">
+    <div class="break-card-header">
+      <div class="break-card-title">
+        <span class="icon">☕</span>
+        <span>带薪离席</span>
+      </div>
+      <button class="btn-icon break-history-btn" id="btnBreakHistory" title="查看历史数据">📋</button>
+    </div>
+    <div class="break-tip" id="breakTip">开始一段带薪离席，看看这段时间值多少钱。</div>
+    <div class="break-timer-wrap" id="breakTimerWrap" style="display:none;">
+      <div class="break-timer" id="breakTimer">00:00:00</div>
+      <div class="break-earning">
+        <span class="break-earning-label">这段时间已赚</span>
+        <span class="break-earning-value">¥<span id="breakEarning">0.00</span></span>
+      </div>
+    </div>
+    <div class="break-actions">
+      <button class="btn btn-primary" id="btnBreakStart">开始计时</button>
+      <button class="btn btn-danger" id="btnBreakEnd" style="display:none;">结束并结算</button>
+    </div>
+  </div>
+
+  <!-- 带薪离席历史弹窗 -->
+  <div class="break-history-modal" id="breakHistoryModal">
+    <div class="break-history-content">
+      <div class="break-history-header">
+        <span>📋 带薪离席历史</span>
+        <button class="btn-icon" id="btnCloseHistory" title="关闭">×</button>
+      </div>
+      <div class="break-history-summary" id="breakHistorySummary"></div>
+      <div class="break-history-list" id="breakHistoryList"></div>
+    </div>
+  </div>
+
   <!-- Stats -->
   <div class="stats-grid">
     <div class="card stat fade-in">

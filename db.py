@@ -268,3 +268,45 @@ def reset_user_data(user_id):
                 raise
     finally:
         _close(conn)
+
+
+# ============== 带薪离席 ==============
+def add_paid_break(user_id, start_at, end_at, duration_seconds, earnings, note=''):
+    """新增一条带薪离席记录"""
+    conn = get_db()
+    try:
+        conn.execute('''
+            INSERT INTO paid_breaks (user_id, start_at, end_at, duration_seconds, earnings, note)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (user_id, start_at, end_at, int(duration_seconds), float(earnings), note))
+        if hasattr(conn, 'commit'):
+            conn.commit()
+    finally:
+        _close(conn)
+
+
+def get_user_breaks(user_id, limit=50):
+    """获取用户带薪离席历史（按时间倒序）"""
+    cols = ['id', 'start_at', 'end_at', 'duration_seconds', 'earnings', 'note', 'created_at']
+    conn = get_db()
+    try:
+        return _fetchall_dict(
+            conn,
+            'SELECT id, start_at, end_at, duration_seconds, earnings, note, created_at '
+            'FROM paid_breaks WHERE user_id = ? ORDER BY created_at DESC LIMIT ?',
+            (user_id, limit),
+            cols
+        )
+    finally:
+        _close(conn)
+
+
+def delete_paid_break(user_id, break_id):
+    """删除一条带薪离席记录（带 user_id 校验）"""
+    conn = get_db()
+    try:
+        conn.execute('DELETE FROM paid_breaks WHERE id = ? AND user_id = ?', (break_id, user_id))
+        if hasattr(conn, 'commit'):
+            conn.commit()
+    finally:
+        _close(conn)

@@ -945,3 +945,220 @@ details.collapsible[open] .chevron { transform: rotate(180deg); }
   animation: fadeIn 0.3s ease both;
 }
 .collapsible-body .settings { margin-bottom: 0; }
+
+/* ============== 带薪离席卡片 ============== */
+.break-card {
+  position: relative;
+  margin-top: 22px;
+  padding: 20px 22px 18px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.06));
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  overflow: hidden;
+}
+.break-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.1), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.break-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.break-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+.break-card-title .icon { font-size: 20px; }
+.break-history-btn {
+  position: relative;
+  z-index: 1;
+}
+.break-tip {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.break-timer-wrap {
+  text-align: center;
+  margin-bottom: 14px;
+  padding: 16px 0;
+  background: rgba(99, 102, 241, 0.08);
+  border-radius: var(--radius-sm);
+}
+.break-timer {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent-strong);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.break-earning {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+}
+.break-earning-label {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.break-earning-value {
+  color: var(--success);
+  font-weight: 600;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.break-actions {
+  display: flex;
+  gap: 10px;
+}
+.break-actions .btn {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+.btn-primary:hover {
+  background: var(--accent-strong);
+  transform: translateY(-1px);
+}
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+.btn-danger:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* ============== 带薪离席历史弹窗 ============== */
+.break-history-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  animation: fadeIn 0.2s ease;
+}
+.break-history-modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.break-history-content {
+  background: var(--card-bg, #fff);
+  border-radius: var(--radius);
+  width: 92%;
+  max-width: 520px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 50px -10px rgba(0,0,0,0.25);
+}
+[data-theme="dark"] .break-history-content {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+.break-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--card-border);
+  font-weight: 600;
+  font-size: 16px;
+}
+.break-history-summary {
+  padding: 12px 20px;
+  background: var(--accent-soft);
+  color: var(--text-primary);
+  font-size: 13px;
+  display: flex;
+  justify-content: space-around;
+  gap: 16px;
+}
+.break-history-summary .summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.break-history-summary .summary-value {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--accent-strong);
+}
+.break-history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 20px 20px;
+}
+.break-history-empty {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--text-muted);
+}
+.break-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--card-border);
+}
+.break-history-item:last-child { border-bottom: none; }
+.break-history-item .item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.break-history-item .item-time {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.break-history-item .item-meta {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.break-history-item .item-earning {
+  font-weight: 600;
+  color: var(--success);
+  font-size: 16px;
+}
+.break-history-item .item-del {
+  margin-left: 8px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 18px;
+  padding: 0 6px;
+}
+.break-history-item .item-del:hover {
+  color: var(--danger);
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

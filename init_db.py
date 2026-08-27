@@ -65,6 +65,17 @@ def init_db():
             sort_order INTEGER DEFAULT 0,
             FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
         )''',
+        '''CREATE TABLE IF NOT EXISTS paid_breaks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            start_at TIMESTAMP NOT NULL,
+            end_at TIMESTAMP NOT NULL,
+            duration_seconds INTEGER NOT NULL,
+            earnings REAL NOT NULL,
+            note TEXT DEFAULT '',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        )''',
     ]
     for sql in statements:
         conn.execute(sql)
